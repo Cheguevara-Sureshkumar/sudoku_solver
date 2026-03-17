@@ -1,0 +1,1 @@
+This is Repo is to solve Sudoku Puzzle of Small(4×4), Medium(6×6), Large(9×9).
