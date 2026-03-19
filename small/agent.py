@@ -63,9 +63,23 @@ class SudokuSmallAgent:
             max_next_q = 0
         else:
             next_q_values = self.get_q_values(next_state)
-            max_next_q = np.max(next_q_values)
+
+            max_next_q = -float('inf')
+
+            for c, vals in valid_actions_dict.items():
+                for v in vals:
+                    idx = c * 4 + (v - 1)
+                    if next_q_values[idx] > max_next_q:
+                        max_next_q = next_q_values[idx]
+
+            # If no valid actions were found, fall back to 0
+            if max_next_q == -float('inf'):
+                max_next_q = 0
+
+        target = reward + self.gamma * max_next_q
+        self.td_error = abs(target - current_q)
         
-        new_q = current_q + self.alpha * (reward + self.gamma * max_next_q - current_q)
+        new_q = current_q + self.alpha * (target - current_q)
         self.q_table[state][action_cell * 4 + (action_val - 1)] = new_q
     
     def save_table(self, filename="q_table.npy"):
@@ -75,7 +89,7 @@ class SudokuSmallAgent:
         self.q_table = np.load(filename, allow_pickle=True).item()
 
     def decay_learning_rate(self):
-        self.alpha *= 0.99
+        self.alpha = max(self.alpha * 0.99, 0.1)
     
     def decay_epsilon(self):
-        self.epsilon *= 0.99
+        self.epsilon = max(self.epsilon * 0.99, 0.1)

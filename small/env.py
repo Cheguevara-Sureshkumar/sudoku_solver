@@ -18,6 +18,11 @@ class SudokuSmallEnv:
     def check_win(self):
         # 1. Check if board is full (no zeros)
         if np.any(self.board == 0):
+            # 5. Check for Valid Actions
+            valid_actions = self.get_valid_actions()
+            if len(valid_actions) == 0:
+                # print("NO Valid Actions")
+                return False
             return None
 
         # 2. Check Rows
@@ -36,6 +41,12 @@ class SudokuSmallEnv:
                 box = self.board[r:r+2, c:c+2]
                 if len(np.unique(box)) != 4:
                     return False
+        
+        # 5. Check for Valid Actions
+        # valid_actions = self.get_valid_actions()
+        # if len(valid_actions) == 0:
+        #     print("NO Valid Actions")
+        #     return False
 
         return True
     
@@ -47,14 +58,68 @@ class SudokuSmallEnv:
         """Standard row-major inverse mapping"""
         return n // 4, n % 4
 
-    def get_reward(self):
+    # def get_reward(self):
+    #     win = self.check_win()
+    #     if win is True:
+    #         return 100
+    #     elif win is False:
+    #         return -100
+    #     else: # win is None (game in progress)
+    #         return -1
+        # else:
+        #     return -300
+
+    def check_horizontal(self, action, cell):
+        i, j = self.get_coord(cell)
+        for c in range(4):
+            if self.board[i, c] == 0:
+                return False
+        return True
+    
+    def check_vertical(self, action, cell):
+        i, j = self.get_coord(cell)
+        for r in range(4):
+            if self.board[r, j] == 0:
+                return False
+        return True
+    
+    def check_box(self, action, cell):
+        i, j = self.get_coord(cell)
+        start_row, start_col = (i // 2) * 2, (j // 2) * 2
+        for r in range(start_row, start_row + 2):
+            for c in range(start_col, start_col + 2):
+                if self.board[r, c] == 0:
+                    return False
+        return True
+    
+    def get_reward(self, action, cell):
         win = self.check_win()
+        
         if win is True:
             return 100
         elif win is False:
             return -100
-        else: # win is None (game in progress)
-            return 1
+        
+        # i, j = self.get_coord(cell)
+
+        # Reward valid placement
+        # if self.is_valid(self.board, i, j, action):
+        #     reward = 5
+        # else:
+        #     return -10  # strong penalty for invalid move
+        filled = np.count_nonzero(self.board)
+        reward = filled * 2   # reward progress
+
+        # Bonus for completing structures
+        bonus = 0
+        if self.check_horizontal(action, cell):
+            bonus += 10
+        if self.check_vertical(action, cell):
+            bonus += 10
+        if self.check_box(action, cell):
+            bonus += 10
+
+        return reward + bonus
 
     # def get_valid_actions(self):
     #     valid_actions = {}
@@ -97,7 +162,7 @@ class SudokuSmallEnv:
         i, j = self.get_coord(cell)
         self.board[i, j] = action
         win = self.check_win()
-        reward = self.get_reward()
+        reward = self.get_reward(action, cell)
         return self.board, reward, win
             
 

@@ -111,5 +111,6 @@ class SudokuSmallPuzzleGenerator:
 # MAIN
 if __name__ == "__main__":
     print("Generated Sudoku Puzzle:\n")
-    generator = SudokuSmallPuzzleGenerator(removals=6)
+    generator = SudokuSmallPuzzleGenerator(removals=1)
     puzzle = generator.puzzle
+    print(puzzle)
