@@ -107,19 +107,19 @@ class SudokuSmallEnv:
         #     reward = 5
         # else:
         #     return -10  # strong penalty for invalid move
-        filled = np.count_nonzero(self.board)
-        reward = filled * 2   # reward progress
+        # filled = np.count_nonzero(self.board)
+        # reward = filled * 2   # reward progress
 
         # Bonus for completing structures
         bonus = 0
         if self.check_horizontal(action, cell):
-            bonus += 10
+            bonus += 30
         if self.check_vertical(action, cell):
-            bonus += 10
+            bonus += 30
         if self.check_box(action, cell):
-            bonus += 10
+            bonus += 30
 
-        return reward + bonus
+        return bonus
 
     # def get_valid_actions(self):
     #     valid_actions = {}

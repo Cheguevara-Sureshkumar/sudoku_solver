@@ -89,7 +89,7 @@ class SudokuSmallAgent:
         self.q_table = np.load(filename, allow_pickle=True).item()
 
     def decay_learning_rate(self):
-        self.alpha = max(self.alpha * 0.99, 0.1)
+        self.alpha = max(self.alpha * 0.999999, 0.4)
     
     def decay_epsilon(self):
         self.epsilon = max(self.epsilon * 0.99, 0.1)

@@ -7,8 +7,8 @@ if __name__ == "__main__":
     generator = SudokuSmallPuzzleGenerator()
     puzzle = generator.puzzle
     env = SudokuSmallEnv(puzzle)
-    agent = SudokuSmallAgent()
-    agent.load_table()
+    agent = SudokuSmallAgent(0.75, 0.6, 0.0)
+    agent.load_table("model/q_82.npy")
     
     win = None
     while win is None:

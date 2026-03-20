@@ -8,7 +8,7 @@ import numpy as np
 
 def train(episodes=1000):
     generator = SudokuSmallPuzzleGenerator(removals=6)
-    agent = SudokuSmallAgent(0.75, 0.6, 0.9)
+    agent = SudokuSmallAgent(0.6, 0.9, 0.9)
     try:
         agent.load_table()
     except FileNotFoundError:
@@ -31,6 +31,7 @@ def train(episodes=1000):
         total_reward_per_episode = 0
         episode_td_error = 0
         step_count = 0
+        count = 0
         while win is None:
             state = agent.encode_state(board)
             valid_actions = env.get_valid_actions()
@@ -52,13 +53,10 @@ def train(episodes=1000):
             agent.update_q_value(state, action_cell, action_val, reward, new_state, next_valid_actions)
             state = new_state
             board = new_board
-            count += 1
             step_count += 1
             episode_td_error += abs(agent.td_error)
             # agent.decay_epsilon()
-            if(count == 200):
-                agent.decay_epsilon()
-                count = 0
+            
             # agent.decay_epsilon()
             # agent.decay_learning_rate()
             if(env.check_win()):
@@ -71,6 +69,9 @@ def train(episodes=1000):
             losses += 1
         avg_td_error = episode_td_error / step_count
         td_error_per_episode.append(avg_td_error)
+        # print(count)
+        if(episode % 100 == 0):
+            agent.decay_epsilon()
         # agent.decay_learning_rate()
         print(f"Alpha : {agent.alpha} | Gamma : {agent.gamma} | Epsilon : {agent.epsilon:.4f} | Reward : {total_reward_per_episode} | TD Error : {avg_td_error:.4f} | Completed {episode+1}/{episodes} episodes. Win : {True if win else False}")
     
@@ -98,6 +99,6 @@ def train(episodes=1000):
     plt.show()
 
 if __name__ == "__main__":
-    train(15000)
+    train(8000)
     
     
